@@ -18,7 +18,7 @@ then
 		echo "Using default value ${NUMFILES} for number of files to write"
 	else
 		NUMFILES=$1
-	fi	
+	fi
 else
 	NUMFILES=$1
 	WRITESTR=$2
@@ -48,46 +48,16 @@ then
 		exit 1
 	fi
 fi
-echo "Removing the old writer utility and compiling as a native application"
-#make clean
-#make
-WRITER_PATH=$(realpath ./writer 2>/dev/null || which writer 2>/dev/null)
-if [ -z "$WRITER_PATH" ]; then
-    echo "Error: writer not found!"
-    exit 1
-else
-    echo "Writer program path: $WRITER_PATH"
-fi
-
-for i in $(seq 1 $NUMFILES)
-do
-    FILE_PATH="$WRITEDIR/${username}$i.txt"
-    ./writer "$FILE_PATH" "$WRITESTR"
-    echo "File created: $FILE_PATH"
-done
 
 for i in $( seq 1 $NUMFILES)
 do
 	./writer "$WRITEDIR/${username}$i.txt" "$WRITESTR"
 done
-echo "Current directory: $(pwd)"
-ls
 
-#OUTPUTSTRING=$(./finder.sh "$WRITEDIR" "$WRITESTR")
-echo "Checking for finder.sh at: $(pwd)/finder.sh"
-ls -l $(pwd)/finder.sh
-FINDER_PATH="/tmp/aesd-autograder/rootfs/home/finder.sh"
-echo "Finder script path: $FINDER_PATH"
-
-if [ -f "$FINDER_PATH" ]; then
-    OUTPUTSTRING=$(bash "$FINDER_PATH" "$WRITEDIR" "$WRITESTR")
-else
-    echo "Error: finder.sh not found at expected path: $FINDER_PATH"
-    exit 1
-fi
+OUTPUTSTRING=$(/bin/sh /home/finder.sh "$WRITEDIR" "$WRITESTR")
 
 # remove temporary directories
-#rm -rf /tmp/aeld-data
+rm -rf /tmp/aeld-data
 
 set +e
 echo ${OUTPUTSTRING} | grep "${MATCHSTR}"
